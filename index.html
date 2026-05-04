@@ -143,7 +143,8 @@
             waiting: 'Ch\u1edd qu\u00e9t m\u00e3 \u0111\u01a1n h\u00e0ng...',
             openCameraError: 'Kh\u00f4ng th\u1ec3 m\u1edf camera: ',
             recording: '\u0110ang quay \u0111\u01a1n: ',
-            busy: '\u0110ang quay \u0111\u01a1n kh\u00e1c! B\u1ea5m k\u1ebft th\u00fac tr\u01b0\u1edbc.'
+            busy: '\u0110ang quay \u0111\u01a1n kh\u00e1c! B\u1ea5m k\u1ebft th\u00fac tr\u01b0\u1edbc.',
+            spaceStop: '\u0110\u00e3 nh\u1eadn ph\u00edm Space, \u0111ang k\u1ebft th\u00fac video...'
         };
 
         const videoElement = document.getElementById('webcam');
@@ -260,7 +261,21 @@
 
         cameraSelect.addEventListener('change', () => startCamera(cameraSelect.value));
 
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                showToast(TEXT.spaceStop, true);
+                mediaRecorder.stop();
+            }
+        }
+
         window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && mediaRecorder && mediaRecorder.state === 'recording') {
+                e.preventDefault();
+                barcodeBuffer = '';
+                stopRecording();
+                return;
+            }
+
             const currentTime = Date.now();
             if (currentTime - lastKeyTime > 100) barcodeBuffer = '';
             lastKeyTime = currentTime;
@@ -270,7 +285,7 @@
                 barcodeBuffer = '';
                 if (scannedCode === '') return;
                 if (scannedCode === 'STOP') {
-                    if (mediaRecorder && mediaRecorder.state === 'recording') stopBtn.click();
+                    stopRecording();
                     return;
                 }
 
@@ -289,7 +304,7 @@
         });
 
         stopBtn.addEventListener('click', () => {
-            if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+            stopRecording();
         });
 
         getCameras();
