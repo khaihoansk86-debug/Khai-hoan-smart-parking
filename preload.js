@@ -1,6 +1,6 @@
-const { contextBridge, ipcRenderer } = require('electron');
+﻿const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    // Hàm này giúp gửi video và mã đơn hàng sang main.js
-    uploadVideo: (orderCode, arrayBuffer) => ipcRenderer.invoke('upload-video', orderCode, arrayBuffer)
+    saveVideo: (orderCode, arrayBuffer) => ipcRenderer.invoke('save-video', orderCode, arrayBuffer),
+    getSyncStatus: () => ipcRenderer.invoke('get-sync-status')
 });
